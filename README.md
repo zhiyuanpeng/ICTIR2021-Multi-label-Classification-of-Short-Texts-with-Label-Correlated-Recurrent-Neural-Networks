@@ -1,5 +1,6 @@
 # Output
 training data, testing data and tree structure of the top k frequent labels
+
 generated folders:
 ```angular2
 data-->processed_text-->X_test.txt
