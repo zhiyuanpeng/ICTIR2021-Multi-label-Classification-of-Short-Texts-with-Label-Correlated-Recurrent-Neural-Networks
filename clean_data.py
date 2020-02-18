@@ -10,6 +10,7 @@ import os
 from sklearn.feature_extraction.text import CountVectorizer
 import random
 from tqdm import tqdm
+import argparse
 
 def mkdir(path):
     folder = os.path.exists(path)
@@ -60,18 +61,43 @@ def y_write(list_name, list_to_file_name):
             f.write(s)
 
 
-def split_data(file_name, label_name, label_num):
+def show_X_train_info(X_train):
+    """
+    show the min max and avg length of the text
+    :param y_train:
+    :return:
+    """
+    length = []
+    for tweet in X_train:
+        length.append(len(tweet.split(" ")))
+    max_len = np.max(length)
+    min_len = np.min(length)
+    mean_len = np.mean(length)
+    print("the min length of train text is: ")
+    print(min_len)
+    print("\n")
+
+    print("the mean length of train text is: ")
+    print(mean_len)
+    print("\n")
+
+    print("the max length of train text is: ")
+    print(max_len)
+    print("\n")
+
+
+def split_data(meta_data, label_name, min_label_num):
     """
     drop the labels not in label_name and drop the data with len(label) less than 2
-    :param file_name: the input the file name
+    :param meta_data: the input the pd data
     :param label_name: the top k label name
+    :param min_label_num: minimum number of labels per instance
     :return:
     """
     #
     random.seed(0)
     threshold = 0.1
     #
-    meta_data = pd.read_csv(file_name)
     X_test = []
     X_train = []
     y_train = []
@@ -80,14 +106,14 @@ def split_data(file_name, label_name, label_num):
     y_train_text = []
     for index, row in tqdm(meta_data.iterrows()):
         # drop the data with num of labels less than two
-        tags = str(row["Tags_clean"]).split(" ")
+        tags = str(row["Tags_clean"]).split(",")
         tags_clean = []
         tags_clean_binary = [0 for i in range(len(label_name))]
         for tag in tags:
             if tag in label_name:
                 tags_clean.append(tag)
                 tags_clean_binary[label_name.index(tag)] = 1
-        if len(tags_clean) >= label_num:
+        if len(tags_clean) >= min_label_num:
             if random.random() > threshold:
                 X_train.append(row["Title_clean"])
                 y_train.append(tags_clean_binary)
@@ -107,36 +133,33 @@ def split_data(file_name, label_name, label_num):
                 del row[i]
         else:
             new_label_name.append(label_name[i])
+    # print the info of train text
+    show_X_train_info(X_train)
     # write to processed/archive
-    x_write(X_test, "data/processed/archive/X_test_" + str(label_num) + ".txt")
-    x_write(X_train, "data/processed/archive/X_train_" + str(label_num) + ".txt")
-    y_write(y_train, "data/processed/archive/y_train_" + str(label_num) + ".txt")
-    y_write(y_test, "data/processed/archive/y_test_" + str(label_num) + ".txt")
+    x_write(X_test, "data/processed_text/X_test_" + str(min_label_num) + ".txt")
+    x_write(X_train, "data/processed_text/X_train_" + str(min_label_num) + ".txt")
+    y_write(y_train, "data/processed_text/y_train_" + str(min_label_num) + ".txt")
+    y_write(y_test, "data/processed_text/y_test_" + str(min_label_num) + ".txt")
     return y_train, new_label_name
 
 
-def remove_duplicate(train_file, test_file):
+def remove_duplicate(file_name):
     """
     drop the duplicates and process the text
-    :param train_file:
-    :param test_file:
+    :param file_name:
     :return: no repeat clean file
     """
     # remove duplicates
-    train_meta = pd.read_csv(train_file)
-    test_meta = pd.read_csv(test_file)
-    df = train_meta.append(test_meta, ignore_index=True)
-    # shuffle the data
-    df = df.sample(frac=1).reset_index(drop=True)
+    df = pd.read_csv(file_name + ".csv", sep="\t", names=["Title", "Tags"])
     duplicate_pairs = df.duplicated('Title')
     print("Total number of duplicate questions : ", duplicate_pairs.sum())
     df = df[~duplicate_pairs]
     print("Dataframe shape after duplicate removal : ", df.shape)
     # process the tags
-    df["Tags_clean"] = df["Tags"].apply(lambda x: tag_process(x))
     df["Title_clean"] = df["Title"].apply(lambda x: preprocess_text(x))
-    df_clean = df.drop(columns=["Title", "Tags", "Body"])
-    df_clean.to_csv("../Datasets/Stack/Total.csv")
+    df["Tags_clean"] = df["Tags"].apply(lambda x: tag_process(x))
+    df_clean = df.drop(columns=["Title", "Tags"])
+    df_clean.to_csv(file_name + "_no_repeat" + ".csv")
     print("write done")
     return df_clean
 
@@ -148,7 +171,7 @@ def get_frequent_labels(df, topk):
     :param topk: top k frequent labels
     :return: top 20 frequent labels
     """
-    vectorizer = CountVectorizer(tokenizer=lambda x: x.split())
+    vectorizer = CountVectorizer(tokenizer=lambda x: x.split(","))
     tag_bow = vectorizer.fit_transform(df['Tags_clean'].values.astype(str))
     # show info
     print("Number of questions :", tag_bow.shape[0])
@@ -171,21 +194,83 @@ def get_frequent_labels(df, topk):
     return tag_df_sorted["Tags"][:topk].values.tolist()
 
 
-# mkdir necessary directories
-mkdir("data/enumeration")
-mkdir("data/img")
-mkdir("data/processed")
-mkdir("data/store")
-mkdir("data/store/original")
-mkdir("data/treeimg")
-#
-pd.set_option('display.max_colwidth', 300)
-label_index = [str(i) for i in range(6)]
-y_train = np.loadtxt("data/processed/y_train.txt")
-tree_node_2, tree_graph_2, tree_edge_2 = gt.get_tree(y_train, label_index, 0, 6, "pearson")
-layout_2 = tree_graph_2.layout_lgl()
-ig.drawing.plot(tree_graph_2, "data/treeimg/tree_pearson.png", layout=layout_2, bbox=(850, 850), margin=(80, 80, 80, 80))
-# mkdir data/store/edges
-for edge in tree_edge_2:
-    edge_dir = "data/store/" + "l" + str(edge[0]) + "_l" + str(edge[1])
-    mkdir(edge_dir)
+def show_tree(y_train, label_name, threshold, steps, score_method):
+    """
+    show the tree structure
+    :param y_train: the y training data
+    :param label_name: the label name to be shown in the tree img
+    :param threshold: edge weight bigger than the threshold will be kept
+    :param steps: the steps max-spanning tree algorithm working
+    :param score_method: method to calculate the correlations
+    :return: no
+    """
+    tree_node, tree_graph, tree_edge = gt.get_tree(y_train, label_name, threshold, steps, score_method)
+    layout = tree_graph.layout_lgl()
+    ig.drawing.plot(tree_graph, "data/tree_img/tree_" + str(score_method) + ".png", layout=layout, bbox=(850, 850),
+                    margin=(80, 80, 80, 80))
+
+
+def mkdir_necessary():
+    """
+    mkdir the necessary folder
+    :return: no
+    """
+    # mkdir necessary directories
+    mkdir("data")
+    mkdir("data/processed_text")
+    mkdir("data/tree_img")
+
+
+def show_y_train_info(y_train):
+    row_distribution = []
+    for i in range(len(y_train)):
+        row_distribution.append(np.sum(y_train[i]))
+    row_mean = np.mean(row_distribution)
+    print("the avg number of the labels per instance in the train is: ")
+    print(row_mean)
+    print("\n")
+
+
+def data_clean(file_name, topk, min_avg_labels, correlation_method, threshold):
+    """
+    clean the data and generate the tree structure
+    :param file_name:
+    :param topk:
+    :param min_avg_labels:
+    :param correlation_method:
+    :param threshold:
+    :return:
+    """
+    # mkdir the necessary folders
+    mkdir_necessary()
+    # remove the duplicate text
+    df_no_repeat = remove_duplicate(file_name)
+    # get the topk frequent labels
+    top_labels = get_frequent_labels(df_no_repeat, topk)
+    # the len(new_label_name) may be less than topk because all 0s column will be delected
+    y_train, new_label_name = split_data(df_no_repeat, top_labels, min_avg_labels)
+    show_y_train_info(y_train)
+    show_tree(y_train, new_label_name, threshold, len(new_label_name), correlation_method)
+
+
+def main():
+
+    # command-line parsing
+    parser = argparse.ArgumentParser()
+    parser.add_argument("file_name", type=str, help="the file name of the csv file, no .csv is needed.")
+    parser.add_argument("topk", type=int,
+                        help="the number of the top frequent labels needed to be kept")
+    parser.add_argument("min_avg_labels", type=int,
+                        help="the minimum number of labels per instance should have. " +
+                             "instance with less than minimum num of labels will be delete")
+    parser.add_argument("--correlation_method", type=str, default="default", choices=["default", "cosine", "pearson"],
+                        help="three ways to calculate the correlation: default, cosine, pearson")
+    parser.add_argument("--threshold", type=int, default=0,
+                        help="three ways to calculate the correlation: default, cosine, pearson")
+    args = parser.parse_args()
+
+    data_clean(args.file_name, args.topk, args.min_avg_labels, args.correlation_method, args.threshold)
+
+
+if __name__ == "__main__":
+    main()

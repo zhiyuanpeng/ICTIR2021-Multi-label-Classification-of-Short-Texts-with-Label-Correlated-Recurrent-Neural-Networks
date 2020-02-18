@@ -1,0 +1,12 @@
+pandas
+numpy
+re
+warnings
+matplotlib.pyplot
+igraph
+os
+sklearn.feature_extraction.text
+random
+tqdm
+argparse
+scipy.stats
