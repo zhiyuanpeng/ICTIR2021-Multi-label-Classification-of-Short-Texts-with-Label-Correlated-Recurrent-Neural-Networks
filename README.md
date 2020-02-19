@@ -37,7 +37,7 @@ There are three parameter need to be filled according to the training data info 
 
 "batchsize" I always set 32 if the dataset is not very big. 64 or 128 is Ok if the dataset is very big.
 # original.py
-original.py is a One-vs-All multi-class model. There are 4 parameters you need to change according to your data.
+original.py is a One-vs-All multi-label model. There are 4 parameters you need to change according to your data.
 "lstm_num", "max_length", and "batchsize" have the same definitions with that of the edge.py
 "dense_num" is the dimensionality of the output of the multi-label classifier which equals to the number of the labels.
 # enumeration.py
