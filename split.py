@@ -19,7 +19,7 @@ def x_write(list_name, list_to_file_name):
     :param list_to_file_name:
     :return: no
     """
-    with open(list_to_file_name, 'a+') as f:
+    with open(list_to_file_name, 'w') as f:
         for line_value in list_name:
             f.write(str(line_value) + "\n")
 
@@ -31,7 +31,7 @@ def y_write(list_name, list_to_file_name):
     :param list_to_file_name:
     :return: no
     """
-    with open(list_to_file_name, 'a+') as f:
+    with open(list_to_file_name, 'w') as f:
         for line_value in list_name:
             s = ""
             for i in range(len(line_value)):
@@ -51,7 +51,7 @@ def y_write_float(list_name, list_to_file_name):
     :param list_to_file_name:
     :return: no
     """
-    with open(list_to_file_name, 'a+') as f:
+    with open(list_to_file_name, 'w') as f:
         for line_value in list_name:
             s = ""
             for i in range(len(line_value)):

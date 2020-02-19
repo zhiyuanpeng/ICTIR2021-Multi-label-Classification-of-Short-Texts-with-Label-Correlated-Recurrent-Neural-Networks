@@ -87,6 +87,7 @@ def return_file_list(edge_list, total_num, adjust_num):
         # for each edge, we define a blank file name
         file_name = edge_name + "_" + "predict_round_" + str(opt_threshold) + "_" + str(left_num) + ".txt"
         file_list.append(file_name)
+    return file_list
 
 
 # def main():

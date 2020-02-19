@@ -3,7 +3,14 @@ import math
 from tqdm import tqdm
 import edge_threshold_adjust as adj
 import split
+import argparse
 
+
+def change_dim(nd_array):
+    if nd_array.ndim == 1:
+        return nd_array.reshape((nd_array.shape[0]), 1)
+    else:
+        return nd_array
 
 def bit_to_list(t, n):
     """
@@ -97,7 +104,7 @@ def overall_optimal(status_list, transfer_matrix, edge_list):
 def exhust_search(filename, edge_list, left_num, link_path_list):
     node_matrix = np.loadtxt("data/split_test/original_predict_" + str(left_num) + ".txt")
     transfer_list = get_transfer_matrix(link_path_list, edge_list)
-    with open("data/enumeration/" + filename, "a+") as vf:
+    with open("data/enumeration/" + filename, "w") as vf:
         iteration = 0
         for index in tqdm(range(node_matrix.shape[0])):
             node_matrix_log = np.zeros_like(node_matrix[index, :])
@@ -126,27 +133,56 @@ def exhust_search(filename, edge_list, left_num, link_path_list):
         print(index)
 
 
+def get_accuracy(result_file, true_file):
+    viterbi_result = np.array(np.loadtxt(result_file, dtype=int))
+    label = np.loadtxt(true_file, dtype=int)
+    # change dim
+    viterbi_result = change_dim(viterbi_result)
+    label = change_dim(label)
+    total_right = 0
+    for i in range(viterbi_result.shape[0]):
+        for j in range(viterbi_result.shape[1]):
+            if viterbi_result[i, j] == label[i, j]:
+                total_right += 1
+    return total_right / (label.shape[0] * label.shape[1])
+
+
 def inference(edge_list, total_num, upper_bound):
-    total_num = np.loadtxt("data/processed")
-    adjust_num = np.floor(total_num * 0.3)
+    adjust_num = int(np.floor(total_num * 0.3))
     left_num = total_num - adjust_num
     split.prepare_test_data(edge_list, total_num, adjust_num)
+    label_file = "data/split_test/y_test_" + str(left_num) + ".txt"
+    baseline_file = "data/split_test/original_predict_" + str(left_num) + "_round.txt"
     if upper_bound == 1:
+        upper_bound_file = "data/enumeration/enumeration_upperbound.txt"
         link_path_list = ["l" + str(edge[0]) + "_l" + str(edge[1]) + "_truth_" + str(left_num) + ".txt" for edge in edge_list]
         exhust_search("enumeration_upperbound.txt", edge_list, left_num, link_path_list)
+        upper_bound_accuracy = get_accuracy(upper_bound_file, label_file)
+        print("the upper bound accuracy is: ")
+        print(upper_bound_accuracy)
     else:
         link_path_list = adj.return_file_list(edge_list, total_num, adjust_num)
         exhust_search("enumeration.txt", edge_list, left_num, link_path_list)
+        predict_file = "data/enumeration/enumeration.txt"
+        predict_accuracy = get_accuracy(predict_file, label_file)
+        print("our method's accuracy is: ")
+        print(predict_accuracy)
+    baseline_accuracy = get_accuracy(baseline_file, label_file)
+    print("the baseline's accuracy is: ")
+    print(baseline_accuracy)
 
 
 def main():
+    # edge list, same in the store folder
     edge_list = [(0, 1), (0, 2), (0, 3), (0, 4)]
+    # the total number of the text instance
+    total_num = 9624
     parser = argparse.ArgumentParser()
-    parser.add_argument("epoch_num", type=int, help="the name of the node")
-
+    parser.add_argument("upper_bound", type=int, help="0: use the predicted edge info, 1: use the true edge info to" +
+                                                      "calculate the upper bound")
     args = parser.parse_args()
-    inference(edge_list, )
-
+    inference(edge_list, total_num, args.upper_bound)
+    # inference(edge_list, total_num, 0)
 
 
 if __name__ == '__main__':
