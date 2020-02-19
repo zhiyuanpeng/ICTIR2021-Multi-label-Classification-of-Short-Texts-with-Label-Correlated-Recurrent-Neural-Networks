@@ -136,10 +136,10 @@ def split_data(meta_data, label_name, min_label_num):
     # print the info of train text
     show_X_train_info(X_train)
     # write to processed/archive
-    x_write(X_test, "data/processed_text/X_test_" + str(min_label_num) + ".txt")
-    x_write(X_train, "data/processed_text/X_train_" + str(min_label_num) + ".txt")
-    y_write(y_train, "data/processed_text/y_train_" + str(min_label_num) + ".txt")
-    y_write(y_test, "data/processed_text/y_test_" + str(min_label_num) + ".txt")
+    x_write(X_test, "data/processed/X_test" + ".txt")
+    x_write(X_train, "data/processed/X_train" + ".txt")
+    y_write(y_train, "data/processed/y_train" + ".txt")
+    y_write(y_test, "data/processed/y_test" + ".txt")
     return y_train, new_label_name
 
 
@@ -190,7 +190,7 @@ def get_frequent_labels(df, topk):
     plt.xticks(i, tag_df_sorted['Tags'])
     plt.xlabel('Tags')
     plt.ylabel('Counts')
-    plt.show()
+    plt.savefig("data/img/topk.png")
     return tag_df_sorted["Tags"][:topk].values.tolist()
 
 
@@ -204,10 +204,21 @@ def show_tree(y_train, label_name, threshold, steps, score_method):
     :param score_method: method to calculate the correlations
     :return: no
     """
+    # use the true name of the labels
     tree_node, tree_graph, tree_edge = gt.get_tree(y_train, label_name, threshold, steps, score_method)
     layout = tree_graph.layout_lgl()
     ig.drawing.plot(tree_graph, "data/tree_img/tree_" + str(score_method) + ".png", layout=layout, bbox=(850, 850),
                     margin=(80, 80, 80, 80))
+    # use the int number to represent the labels
+    label_name_digit = [str(i) for i in range(len(label_name))]
+    tree_node_digit, tree_graph_digit, tree_edge_digit = gt.get_tree(y_train, label_name_digit, threshold, steps, score_method)
+    layout_digit = tree_graph_digit.layout_lgl()
+    ig.drawing.plot(tree_graph_digit, "data/tree_img/tree_" + str(score_method) + "_digit.png", layout=layout_digit, bbox=(850, 850),
+                    margin=(80, 80, 80, 80))
+    # mkdir data/store/edges
+    for edge in tree_edge_digit:
+        edge_dir = "data/store/" + "l" + str(edge[0]) + "_l" + str(edge[1])
+        mkdir(edge_dir)
 
 
 def mkdir_necessary():
@@ -217,8 +228,10 @@ def mkdir_necessary():
     """
     # mkdir necessary directories
     mkdir("data")
-    mkdir("data/processed_text")
+    mkdir("data/processed")
     mkdir("data/tree_img")
+    mkdir("data/img")
+    mkdir("data/store")
 
 
 def show_y_train_info(y_train):
