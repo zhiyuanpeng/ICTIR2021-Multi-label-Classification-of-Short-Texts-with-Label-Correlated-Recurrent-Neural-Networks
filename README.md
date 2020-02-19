@@ -29,20 +29,29 @@ we need to keep, and 2 is the number of minimum labels per instance should have.
 There are two imgs in the tree_img folder. Each label of the img with postfix ".digit" is a int number representing the index of the lable.
 # edge.py
 edge.py is a binary classifier for edges. It consists of the training and prediction processes. 
-There are three parameter need to be filled according to the training data info printed by the clean_data.py
+There are three parameter need to be filled according to the training data info printed by the clean_data.py:
+
 "lstm_num" is the length of the output vector of the LSTM, normally shorter than the "max_length" but bigger than 1.
-"max_length" is the max length of the input text we keep. For this parameter I always choose the value bigger than the average length of the training text printed by the clean_data.py
+
+"max_length" is the max length of the input text we keep. For this parameter I always choose the value bigger than the average length of the training text printed by the clean_data.py.
+
 "batchsize" I always set 32 if the dataset is not very big. 64 or 128 is Ok if the dataset is very big.
+
 "save_data" is a command line argument. In the process of finding the point to stopping the training, you don't need to set the value. Once you find the appropriate number of epochs. You can set the "save_data" to 1 and run the file again to save the predicted results.
 # original.py
-original.py is a One-vs-All multi-label model. It consists of the training and prediction processes. There are 4 parameters you need to change according to your data.
+original.py is a One-vs-All multi-label model. It consists of the training and prediction processes. There are 4 parameters you need to change according to your data:
+
 "lstm_num", "max_length", and "batchsize" have the same definitions with that of the edge.py.
+
 "dense_num" is the dimensionality of the output of the multi-label classifier which equals to the number of the labels.
+
 "save_data" is a command line argument.  In the process of finding the point to stopping the training, you don't need to set the value. Once you find the appropriate number of epochs. You can set the "save_data" to 1 and run the file again to save the predicted results.
 # enumeration.py
-enumeration.py does the inference. There are two parameters you need to change according to the data.
+enumeration.py does the inference. There are two parameters you need to change according to the data:
+
 "edge_list" is a list of the edges which are listed in your "data/store" folder. If your "data/store" folder has a list of edges: l0_l1, l0_l3, l1_l4, l3_l2,
 then you can fill the edge_list with [(0, 1), (0, 3), (1, 4), (3, 2)].
+
 "total_num" is the number of the test instances. 
 # Requirement Package
 all list in requirements.txt
