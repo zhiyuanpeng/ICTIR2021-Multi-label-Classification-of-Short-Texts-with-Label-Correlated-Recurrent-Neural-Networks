@@ -167,27 +167,27 @@ def train_predict(epoch_num, save_data, optimizer_name, lstm_num, dense_num, max
         r.write("score is " + str(score[0]) + "\n")
         r.write("accuracy by model_predict is " + str(score[1]) + "\n")
         r.write("total number of training data is " + str(y_train.shape[0]) + "\n")
-        for i in range(y_test.shape[1]):
-            # get confusion matrix
-            con_mat = confusion_matrix(list(y_test[:, i]), list(y_predict_round[:, i]))
-            con_mat_norm = np.round(con_mat.astype('float') / con_mat.sum(axis=1)[:, np.newaxis], 4)
-            r.write("\n")
-            r.write("node l" + str(i) + " confusion matrix [0, 0]: " + str(con_mat[0, 0]) + "\n")
-            r.write("node l" + str(i) + " confusion matrix [0, 1]: " + str(con_mat[0, 1]) + "\n")
-            r.write("node l" + str(i) + " confusion matrix [1, 0]: " + str(con_mat[1, 0]) + "\n")
-            r.write("node l" + str(i) + " confusion matrix [1, 1]: " + str(con_mat[1, 1]) + "\n")
-            r.write("node l" + str(i) + " precision of 0 is " + str(con_mat_norm[0, 0]) + "\n")
-            if con_mat[0, 0] == 0.0:
-                r.write("node l" + str(i) + " recall of 0 is " + str(0.0) + "\n")
-            else:
-                r.write("node l" + str(i) + " recall of 0 is " + str(
-                    con_mat[0, 0] / (con_mat[0, 0] + con_mat[1, 0])) + "\n")
-            r.write("node l" + str(i) + " precision of 1 is " + str(con_mat_norm[1, 1]) + "\n")
-            if con_mat[1, 1] == 0.0:
-                r.write("node l" + str(i) + " recall of 1 is " + str(0.0) + "\n")
-            else:
-                r.write("node l" + str(i) + " recall of 1 is " + str(
-                    con_mat[1, 1] / (con_mat[0, 1] + con_mat[1, 1])) + "\n")
+        # for i in range(y_test.shape[1]):
+        #     # get confusion matrix
+        #     con_mat = confusion_matrix(list(y_test[:, i]), list(y_predict_round[:, i]))
+        #     con_mat_norm = np.round(con_mat.astype('float') / con_mat.sum(axis=1)[:, np.newaxis], 4)
+        #     r.write("\n")
+        #     r.write("node l" + str(i) + " confusion matrix [0, 0]: " + str(con_mat[0, 0]) + "\n")
+        #     r.write("node l" + str(i) + " confusion matrix [0, 1]: " + str(con_mat[0, 1]) + "\n")
+        #     r.write("node l" + str(i) + " confusion matrix [1, 0]: " + str(con_mat[1, 0]) + "\n")
+        #     r.write("node l" + str(i) + " confusion matrix [1, 1]: " + str(con_mat[1, 1]) + "\n")
+        #     r.write("node l" + str(i) + " precision of 0 is " + str(con_mat_norm[0, 0]) + "\n")
+        #     if con_mat[0, 0] == 0.0:
+        #         r.write("node l" + str(i) + " recall of 0 is " + str(0.0) + "\n")
+        #     else:
+        #         r.write("node l" + str(i) + " recall of 0 is " + str(
+        #             con_mat[0, 0] / (con_mat[0, 0] + con_mat[1, 0])) + "\n")
+        #     r.write("node l" + str(i) + " precision of 1 is " + str(con_mat_norm[1, 1]) + "\n")
+        #     if con_mat[1, 1] == 0.0:
+        #         r.write("node l" + str(i) + " recall of 1 is " + str(0.0) + "\n")
+        #     else:
+        #         r.write("node l" + str(i) + " recall of 1 is " + str(
+        #             con_mat[1, 1] / (con_mat[0, 1] + con_mat[1, 1])) + "\n")
 
     # model.save("models/original.h5")
     epochs = len(history.history['loss'])
@@ -206,7 +206,7 @@ def main():
     parser.add_argument("--optimizer_name", type=str, default="adam", help="the optimizer name, default is adam")
     args = parser.parse_args()
     lstm_num = 16
-    dense_num = 10
+    dense_num = 5
     max_length = 32
     batchsize = 32
     train_predict(args.epoch_num, args.save_data, args.optimizer_name, lstm_num, dense_num, max_length, batchsize)

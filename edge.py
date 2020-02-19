@@ -196,22 +196,22 @@ def select_best(epoch_num, a, b, save_data, optimizer_name, iter_num, lstm_num, 
         r.write("text max length is " + str(max_length) + "\n")
         r.write("accuracy is " + str(accuracy_max) + "\n")
         r.write("\n")
-        r.write("edge " + edge_str + " confusion matrix [0, 0]: " + str(con_mat[0, 0]) + "\n")
-        r.write("edge " + edge_str + " confusion matrix [0, 1]: " + str(con_mat[0, 1]) + "\n")
-        r.write("edge " + edge_str + " confusion matrix [1, 0]: " + str(con_mat[1, 0]) + "\n")
-        r.write("edge " + edge_str + " confusion matrix [1, 1]: " + str(con_mat[1, 1]) + "\n")
-        r.write("edge " + edge_str + " precision of 0 is " + str(con_mat_norm[0, 0]) + "\n")
-        if con_mat[0, 0] == 0.0:
-            r.write("edge " + edge_str + " recall of 0 is " + str(0.0) + "\n")
-        else:
-            r.write("edge " + edge_str + " recall of 0 is " + str(
-                con_mat[0, 0] / (con_mat[0, 0] + con_mat[1, 0])) + "\n")
-        r.write("edge " + edge_str + " precision of 1 is " + str(con_mat_norm[1, 1]) + "\n")
-        if con_mat[1, 1] == 0.0:
-            r.write("edge " + edge_str + " recall of 1 is " + str(0.0) + "\n")
-        else:
-            r.write("edge " + edge_str + " recall of 1 is " + str(
-                con_mat[1, 1] / (con_mat[0, 1] + con_mat[1, 1])) + "\n")
+        # r.write("edge " + edge_str + " confusion matrix [0, 0]: " + str(con_mat[0, 0]) + "\n")
+        # r.write("edge " + edge_str + " confusion matrix [0, 1]: " + str(con_mat[0, 1]) + "\n")
+        # r.write("edge " + edge_str + " confusion matrix [1, 0]: " + str(con_mat[1, 0]) + "\n")
+        # r.write("edge " + edge_str + " confusion matrix [1, 1]: " + str(con_mat[1, 1]) + "\n")
+        # r.write("edge " + edge_str + " precision of 0 is " + str(con_mat_norm[0, 0]) + "\n")
+        # if con_mat[0, 0] == 0.0:
+        #     r.write("edge " + edge_str + " recall of 0 is " + str(0.0) + "\n")
+        # else:
+        #     r.write("edge " + edge_str + " recall of 0 is " + str(
+        #         con_mat[0, 0] / (con_mat[0, 0] + con_mat[1, 0])) + "\n")
+        # r.write("edge " + edge_str + " precision of 1 is " + str(con_mat_norm[1, 1]) + "\n")
+        # if con_mat[1, 1] == 0.0:
+        #     r.write("edge " + edge_str + " recall of 1 is " + str(0.0) + "\n")
+        # else:
+        #     r.write("edge " + edge_str + " recall of 1 is " + str(
+        #         con_mat[1, 1] / (con_mat[0, 1] + con_mat[1, 1])) + "\n")
     # model_max.save("models/" + edge_str + ".h5")
     epochs = len(history_max.history['loss'])
     plt.plot(range(epochs), history_max.history['loss'], label='loss')

@@ -4,6 +4,17 @@ from tqdm import tqdm
 import edge_threshold_adjust as adj
 import split
 import argparse
+import os
+
+
+def mkdir(path):
+    folder = os.path.exists(path)
+    if not folder:
+        os.makedirs(path)
+        print("---  new folder...  ---")
+        print("---  OK  ---")
+    else:
+        print("---  There is this folder!  ---")
 
 
 def change_dim(nd_array):
@@ -11,6 +22,7 @@ def change_dim(nd_array):
         return nd_array.reshape((nd_array.shape[0]), 1)
     else:
         return nd_array
+
 
 def bit_to_list(t, n):
     """
@@ -148,6 +160,7 @@ def get_accuracy(result_file, true_file):
 
 
 def inference(edge_list, total_num, upper_bound):
+    mkdir("data/enumeration")
     adjust_num = int(np.floor(total_num * 0.3))
     left_num = total_num - adjust_num
     split.prepare_test_data(edge_list, total_num, adjust_num)
@@ -174,9 +187,9 @@ def inference(edge_list, total_num, upper_bound):
 
 def main():
     # edge list, same in the store folder
-    edge_list = [(0, 1), (0, 2), (0, 3), (0, 4)]
+    edge_list = [(0, 1), (0, 3), (1, 4), (3, 2)]
     # the total number of the text instance
-    total_num = 9624
+    total_num = 12
     parser = argparse.ArgumentParser()
     parser.add_argument("upper_bound", type=int, help="0: use the predicted edge info, 1: use the true edge info to" +
                                                       "calculate the upper bound")
