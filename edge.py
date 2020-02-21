@@ -223,7 +223,7 @@ def select_best(epoch_num, a, b, save_data, optimizer_name, iter_num, lstm_num, 
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("epoch_num", type=int, help="the name of the node")
+    parser.add_argument("epoch_num", type=int, help="the name of the training epochs")
     parser.add_argument("a", type=int, help="begin node")
     parser.add_argument("b", type=int, help="end node")
     parser.add_argument("--save_data", type=int, default=0, help="save the predicted data or not: default not save," +
