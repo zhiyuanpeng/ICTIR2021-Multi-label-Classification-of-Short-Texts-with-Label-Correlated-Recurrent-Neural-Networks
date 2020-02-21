@@ -12,10 +12,10 @@ sample.csv is a piece of sample data with the format: text\tl1,l2,l3,...
 training data, testing data and tree structure of the top k frequent labels
 generated folders:
 ```angular2
-data-->processed_text-->X_test.txt
-                     -->X_train.txt
-                     -->y_test.txt 
-                     -->y_train.txt
+data-->processed_text-->X_test.txt: the test query
+                     -->X_train.txt: the train query
+                     -->y_test.txt: the labels of test query
+                     -->y_train.txt: the labels of train query
     -->tree_img      -->tree.png
     -->store         -->lx_ly
                      -->lx_ly
