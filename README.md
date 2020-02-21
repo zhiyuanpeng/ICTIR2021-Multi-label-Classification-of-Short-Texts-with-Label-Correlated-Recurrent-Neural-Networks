@@ -1,8 +1,9 @@
 # useage steps
-1. run clean_data.py to clean data
-2. run original.py to get the baseline result
-3. run the edge.py to get the predict result for each edge
-4. run the enumeration.py to get the predicted result and the accuracy. Our method improves the baseline result by adding the edge info to it,
+1. download the glove.6B.100d.txt and put it at the upper level catalogue
+2. run clean_data.py to clean data
+3. run original.py to get the baseline result
+4. run the edge.py to get the predict result for each edge
+5. run the enumeration.py to get the predicted result and the accuracy. Our method improves the baseline result by adding the edge info to it,
 so before running the enumeration.py, make sure you have ran the edge.py and original.py
 # clean_data.py
 ## input
