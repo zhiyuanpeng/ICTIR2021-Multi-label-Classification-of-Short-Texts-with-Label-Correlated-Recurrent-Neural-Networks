@@ -54,6 +54,9 @@ enumeration.py does the inference. There are two parameters you need to change a
 then you can fill the edge_list with [(0, 1), (0, 3), (1, 4), (3, 2)].
 
 "total_num" is the number of the test instances. 
+# navie_bayes.py
+This file implements the baseline algorithm navie bayes. There is only one parameter named "max_length" which is the same as the parameter "max_length" in original.py or edge.py. You can copy the value from original.py or edge.py.
+There is one more package needed to be installed: nltk 3.4.5
 # Requirement Package
 all list in requirements.txt
 

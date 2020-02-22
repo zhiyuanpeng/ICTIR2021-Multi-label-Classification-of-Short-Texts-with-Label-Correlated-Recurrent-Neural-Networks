@@ -21,7 +21,7 @@ def get_text(file_name):
     return text
 
 
-def get_result(maxlen):
+def get_result(max_length):
     x_test = get_text("data/processed" + "/X_test.txt")
     x_train = get_text("data/processed" + "/X_train.txt")
     y_test = np.loadtxt("data/processed" + "/y_test.txt", dtype=int)
@@ -31,8 +31,8 @@ def get_result(maxlen):
     tokenizer.fit_on_texts(x_train)
     x_train_cut_num = tokenizer.texts_to_sequences(x_train)
     x_test_cut_num = tokenizer.texts_to_sequences(x_test)
-    x_train_cut_num_pad = pad_sequences(x_train_cut_num, padding="post", maxlen=maxlen, value=4)
-    x_test_cut_num_pad = pad_sequences(x_test_cut_num, padding="post", maxlen=maxlen, value=4)
+    x_train_cut_num_pad = pad_sequences(x_train_cut_num, padding="post", maxlen=max_length, value=4)
+    x_test_cut_num_pad = pad_sequences(x_test_cut_num, padding="post", maxlen=max_length, value=4)
     x_train_cut_text = tokenizer.sequences_to_texts(x_train_cut_num_pad)
     x_test_cut_text = tokenizer.sequences_to_texts(x_test_cut_num_pad)
 
@@ -50,10 +50,10 @@ def get_result(maxlen):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("maxlen", type=int, help="the truncation length of the text or query, usually longer " +
+    parser.add_argument("max_length", type=int, help="the truncation length of the text or query, usually longer " +
                                                  "than the average length of the text")
     args = parser.parse_args()
-    get_result(args.maxlen)
+    get_result(args.max_length)
 
 
 if __name__ == "__main__":
