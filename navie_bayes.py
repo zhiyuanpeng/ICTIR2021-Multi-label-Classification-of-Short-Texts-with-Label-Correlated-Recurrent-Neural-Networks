@@ -7,6 +7,8 @@ from sklearn.pipeline import Pipeline
 from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 import argparse
+from sklearn.metrics import precision_recall_fscore_support, precision_score, recall_score
+from sklearn.metrics import roc_auc_score
 
 def get_text(file_name):
     """
@@ -39,13 +41,20 @@ def get_result(max_length):
     nb_pipeline = Pipeline([('tfidf', TfidfVectorizer()),
                             ('clf', MultinomialNB(fit_prior=True, class_prior=None))])
     nb_total = 0
+    nb_result_list = []
     for i in range(y_test.shape[1]):
         nb_pipeline.fit(x_train_cut_text, y_train[:, i])
         nb_predict = nb_pipeline.predict(x_test_cut_text)
+        nb_result_list.append(nb_predict)
         nb_total += np.sum([y_test[j, i] == nb_predict[j] for j in range(y_test.shape[0])])
+    nb_result_reshape = np.array(nb_result_list).reshape(y_test.shape[0], y_test.shape[1])
     total_num = y_test.shape[0]*y_test.shape[1]
-    print("navie bayes:")
+    print("navie bayes accuracy: ")
     print(nb_total/total_num)
+    print("F1 score: ")
+    print(precision_recall_fscore_support(y_test, nb_result_reshape, average='macro'))
+    print("roc score: ")
+    print(roc_auc_score(y_test, nb_result_reshape))
 
 
 def main():
@@ -58,6 +67,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
